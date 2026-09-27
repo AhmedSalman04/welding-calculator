@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Welding prices">
+<meta name="theme-color" content="#1E2B38">
+<title>Welding rods daily price sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF0F2; --surface:#FFFFFF; --ink:#18212B; --muted:#5A6673; --line:#CCD3DA;
+  --band:#1E2B38; --band-ink:#E9EEF2; --arc:#E39B2D; --arc-soft:#F6E3C4; --good:#2D7A4F; --warn:#A8471F;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#11171D; --surface:#1A222B; --ink:#E6EBEF; --muted:#94A1AE; --line:#2C3843;
+    --band:#0B1116; --band-ink:#E6EBEF; --arc:#F0AE45; --arc-soft:#3A2E1A; --good:#5DBB86; --warn:#E3875F;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#11171D; --surface:#1A222B; --ink:#E6EBEF; --muted:#94A1AE; --line:#2C3843;
+  --band:#0B1116; --band-ink:#E6EBEF; --arc:#F0AE45; --arc-soft:#3A2E1A; --good:#5DBB86; --warn:#E3875F;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font-family:"IBM Plex Sans Arabic",system-ui,-apple-system,"Segoe UI",Tahoma,Arial,sans-serif;
+  font-size:16px;line-height:1.5;-webkit-text-size-adjust:100%}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:860px;margin:0 auto;padding:0 20px}
+header.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0 14px}
+header.top h1{font-size:1.15rem;font-weight:600;margin:0}
+header.top .date{color:var(--muted);font-size:.9rem}
+.lang{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;
+  padding:6px 14px;font:inherit;font-size:.9rem;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--arc);outline-offset:2px}
+
+.band{background:var(--band);color:var(--band-ink);border-radius:18px;padding:22px 22px 18px;
+  display:grid;grid-template-columns:1fr auto;gap:16px 24px;align-items:end}
+.band label{display:block;font-size:.95rem;opacity:.85;margin-bottom:6px}
+.rate{display:flex;align-items:baseline;gap:10px}
+.rate input{width:100%;min-width:0;background:transparent;border:none;border-bottom:3px solid var(--arc);
+  color:var(--arc);font:inherit;font-weight:700;font-size:clamp(2.6rem,9vw,4.2rem);line-height:1.1;padding:0 0 4px}
+.rate .unit{font-size:1rem;opacity:.8;white-space:nowrap}
+.band .side{display:flex;flex-direction:column;gap:10px;min-width:170px}
+.band .side label{margin-bottom:2px;font-size:.85rem}
+.band .side input[type=number]{width:100%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2);
+  color:var(--band-ink);border-radius:8px;padding:8px 10px;font:inherit}
+.chk{display:flex;align-items:center;gap:8px;font-size:.85rem}
+.band .chk{opacity:.9}
+.hint{grid-column:1/-1;font-size:.85rem;opacity:.7;margin:0}
+
+section{margin:26px 0}
+h2{font-size:1.05rem;font-weight:600;margin:0 0 10px}
+.table-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;background:var(--surface);
+  border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:640px}
+th,td{padding:14px 16px;text-align:start;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+th{font-weight:500;color:var(--muted);font-size:.85rem}
+td.tier{font-weight:600}
+td.tier small{display:block;font-weight:400;color:var(--muted);font-size:.8rem}
+td.sdg{font-weight:700;font-size:1.3rem}
+.actions{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+.btn{background:var(--arc);color:#1B1206;border:none;border-radius:10px;padding:12px 18px;
+  font:inherit;font-weight:600;cursor:pointer}
+.status{font-size:.9rem;color:var(--good)}
+textarea.msg{width:100%;min-height:150px;margin-top:10px;border:1px solid var(--line);border-radius:10px;
+  background:var(--surface);color:var(--ink);font:inherit;padding:12px;display:none}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px}
+.field label{display:block;font-size:.88rem;color:var(--muted);margin-bottom:4px}
+.field input{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:8px;padding:10px 12px;font:inherit}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.panel .chk{margin-bottom:14px;font-size:.92rem}
+.breakdown{margin-top:14px}
+.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);
+  border:1px solid var(--line);border-radius:12px;overflow:hidden;margin-top:14px}
+.summary div{background:var(--surface);padding:14px 16px}
+.summary .k{font-size:.82rem;color:var(--muted)}
+.summary .v{font-size:1.15rem;font-weight:600}
+.note{font-size:.88rem;color:var(--muted);margin:10px 0 0}
+.warnbox{border-inline-start:4px solid var(--warn);background:var(--arc-soft);padding:10px 14px;border-radius:8px;
+  font-size:.9rem;margin-top:12px}
+.tiers{min-width:420px}
+.tiers td input{width:90px;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:6px;padding:6px 8px;font:inherit}
+footer{color:var(--muted);font-size:.82rem;padding:10px 0 30px}
+[hidden]{display:none!important}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.field select{width:100%;border:1px solid var(--line);background:var(--surface);color:var(--ink);
+  border-radius:8px;padding:10px 12px;font:inherit}
+.preview{margin-top:14px;padding:12px 14px;border-radius:10px;background:var(--bg);font-size:.95rem}
+.preview b{font-size:1.05rem}
+.confirmBox{margin-top:14px;padding:14px;border-radius:10px;border:2px solid var(--arc);background:var(--arc-soft)}
+.confirmBox p{margin:0 0 4px}
+.status.err{color:var(--warn)}
+table.log{min-width:620px}
+table.log td,table.log th{padding:10px 12px}
+.tag{font-size:.78rem;padding:2px 8px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+.tag.new{border-color:var(--arc);color:var(--ink);background:var(--arc-soft)}
+.del{background:none;border:1px solid var(--line);color:var(--muted);border-radius:6px;padding:4px 8px;font:inherit;font-size:.8rem;cursor:pointer}
+.del.armed{border-color:var(--warn);color:var(--warn)}
+.empty{color:var(--muted);text-align:center}
+
+@media (max-width:560px){
+  .band{grid-template-columns:1fr}
+  .band .side{flex-direction:row;flex-wrap:wrap}
+  .band .side > div{flex:1 1 140px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1 data-i18n="title">Welding rods daily price sheet</h1>
+      <div class="date num" id="today"></div>
+    </div>
+    <button class="lang" id="langBtn" type="button">العربية</button>
+  </header>
+
+  <div class="warnbox" id="setupWarn" data-i18n="setupWarn" style="margin:0 0 14px" hidden>Set up first: enter today's dollar rate below, and your total cost per ton under “Container and costs”.</div>
+  <div class="band">
+    <div>
+      <label for="rate" data-i18n="rateLabel">Today's dollar rate (parallel market)</label>
+      <div class="rate">
+        <input id="rate" class="num" type="number" inputmode="decimal" min="0" step="1" value="" placeholder="0">
+        <span class="unit" data-i18n="rateUnit">SDG per $1</span>
+      </div>
+    </div>
+    <div class="side">
+      <div>
+        <label for="buffer" data-i18n="bufferLabel">Safety buffer %</label>
+        <input id="buffer" class="num" type="number" inputmode="decimal" min="0" step="0.5" value="3">
+      </div>
+      <label class="chk"><input id="round" type="checkbox" checked> <span data-i18n="roundLabel">Round up to nearest 100 SDG</span></label>
+    </div>
+    <p class="hint" data-i18n="rateHint">Update this number every morning. All pound prices below change with it.</p>
+  </div>
+
+  <section>
+    <h2 id="pricesTitle">Today's prices per carton</h2>
+    <div class="table-scroll">
+      <table>
+        <thead><tr>
+          <th data-i18n="thTier">Customer</th>
+          <th data-i18n="thSdg">Price per carton today (SDG)</th>
+          <th data-i18n="thUsd">Price per carton ($)</th>
+          <th data-i18n="thProfit">Profit per carton ($)</th>
+          <th data-i18n="thProfitTon">Profit per ton ($)</th>
+        </tr></thead>
+        <tbody id="priceRows"></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="btn" id="copyBtn" type="button" data-i18n="copyBtn">Copy today's price message</button>
+      <span class="status" id="copyStatus" role="status" aria-live="polite"></span>
+    </div>
+    <textarea class="msg" id="msgBox" readonly aria-label="Price message"></textarea>
+  </section>
+  <section>
+    <h2 data-i18n="saleTitle">Record a sale</h2>
+    <div class="panel">
+      <div class="grid">
+        <div class="field"><label for="sCustomer" data-i18n="sCustomer">Customer</label><input id="sCustomer" type="text" autocomplete="off"></div>
+        <div class="field"><label for="sCartons" data-i18n="sCartons">Cartons</label><input id="sCartons" class="num" type="number" inputmode="numeric" min="1" step="1"></div>
+        <div class="field"><label for="sLevel" data-i18n="sLevel">Price level</label>
+          <select id="sLevel"><option value="0"></option><option value="1"></option><option value="2"></option></select></div>
+        <div class="field"><label for="sPrice" data-i18n="sPrice">Price per carton (SDG)</label><input id="sPrice" class="num" type="number" inputmode="numeric" min="0" step="100"></div>
+        <div class="field"><label for="sPay" data-i18n="sPay">Payment</label>
+          <select id="sPay"><option value="paid"></option><option value="deposit"></option></select></div>
+        <div class="field"><label for="sNotes" data-i18n="sNotes">Notes</label><input id="sNotes" type="text" autocomplete="off"></div>
+      </div>
+      <div class="preview num" id="salePreview"></div>
+      <div class="actions">
+        <button class="btn" id="saleBtn" type="button" data-i18n="saleBtn">Confirm sale</button>
+        <span class="status" id="saleStatus" role="status" aria-live="polite"></span>
+      </div>
+      <div class="confirmBox" id="confirmBox" hidden>
+        <p id="confirmText"></p>
+        <div class="actions">
+          <button class="btn" id="saleYes" type="button" data-i18n="saleYes">Yes, save this sale</button>
+          <button class="btn ghost" id="saleNo" type="button" data-i18n="saleNo">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2 data-i18n="logTitle">Sales log</h2>
+    <div class="summary" id="logSummary" style="margin:0 0 14px"></div>
+    <div class="table-scroll">
+      <table class="log">
+        <thead><tr>
+          <th data-i18n="lDate">Date</th><th data-i18n="sCustomer">Customer</th><th data-i18n="sCartons">Cartons</th>
+          <th data-i18n="lTotal">Total (SDG)</th><th data-i18n="lProfit">Profit ($)</th><th data-i18n="lExcel">File</th><th></th>
+        </tr></thead>
+        <tbody id="logRows"></tbody>
+      </table>
+    </div>
+    <div class="actions">
+      <button class="btn" id="dlCsv" type="button" data-i18n="dlCsv">Send sales file (CSV)</button>
+    </div>
+    <span class="status" id="logStatus" role="status" aria-live="polite"></span>
+    <textarea class="msg" id="logBox" readonly aria-label="Rows for Excel"></textarea>
+    <p class="note" data-i18n="logNote"></p>
+  </section>
+
+
+  <section>
+    <h2 data-i18n="containerTitle">Container and costs</h2>
+    <div class="panel">
+      <label class="chk"><input id="useTotal" type="checkbox" checked> <span data-i18n="useTotal">I know my total cost per ton (all costs included)</span></label>
+      <div class="grid">
+        <div class="field"><label for="product" data-i18n="product">Product</label><input id="product" type="text" value="Welding Material"></div>
+        <div class="field"><label for="tons" data-i18n="tons">Tons in container</label><input id="tons" class="num" type="number" min="0" step="0.5" value="25"></div>
+        <div class="field"><label for="cpt" data-i18n="cpt">Cartons per ton</label><input id="cpt" class="num" type="number" min="1" step="1" value="50"></div>
+        <div class="field" id="totalField"><label for="total" data-i18n="total">Total cost per ton ($)</label><input id="total" class="num" type="number" inputmode="decimal" min="0" step="1" value="" placeholder="0"></div>
+      </div>
+      <div class="breakdown" id="breakdown" hidden>
+        <div class="grid">
+          <div class="field"><label for="cif" data-i18n="cif">Price per ton, CIF Port Sudan ($)</label><input id="cif" class="num" type="number" inputmode="decimal" min="0" step="1" value="" placeholder="0"></div>
+          <div class="field"><label for="duty" data-i18n="duty">Customs duty & taxes, whole container ($)</label><input id="duty" class="num" type="number" min="0" step="10" value="0"></div>
+          <div class="field"><label for="clearing" data-i18n="clearing">Clearing & port fees, whole container ($)</label><input id="clearing" class="num" type="number" min="0" step="10" value="0"></div>
+          <div class="field"><label for="transport" data-i18n="transport">Transport to warehouse ($)</label><input id="transport" class="num" type="number" min="0" step="10" value="0"></div>
+          <div class="field"><label for="other" data-i18n="other">Storage, bank fees & other ($)</label><input id="other" class="num" type="number" min="0" step="10" value="0"></div>
+        </div>
+        <p class="note" data-i18n="costNote">Enter pound costs in dollars, converted at the rate you actually paid.</p>
+        <div class="warnbox" id="zeroWarn" data-i18n="zeroWarn">Duty, clearing and transport are still at zero, so these prices are too low. Add your real costs from past containers.</div>
+      </div>
+    </div>
+    <div class="summary" id="summary"></div>
+  </section>
+
+  <section>
+    <h2 data-i18n="tiersTitle">Price levels</h2>
+    <div class="table-scroll">
+      <table class="tiers">
+        <thead><tr>
+          <th data-i18n="thTier">Customer</th>
+          <th data-i18n="thMin">Minimum cartons</th>
+          <th data-i18n="thMargin">Margin %</th>
+        </tr></thead>
+        <tbody>
+          <tr><td data-i18n="bulk">Bulk (wholesalers)</td><td><input id="minBulk" class="num" type="number" min="1" value="25"></td><td><input id="mBulk" class="num" type="number" step="0.5" value="8"></td></tr>
+          <tr><td data-i18n="medium">Medium</td><td><input id="minMed" class="num" type="number" min="1" value="5"></td><td><input id="mMed" class="num" type="number" step="0.5" value="11"></td></tr>
+          <tr><td data-i18n="small">Small (workshops)</td><td><input id="minSmall" class="num" type="number" min="1" value="2"></td><td><input id="mSmall" class="num" type="number" step="0.5" value="15"></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" data-i18n="tiersNote">Margin is added on top of your full cost per carton.</p>
+  </section>
+
+  <footer data-i18n="footer">Your numbers are saved on this device only. Prices in pounds are valid for today only.</footer>
+</div>
+
+<script>
+(function(){
+  var T = {
+    en:{title:"Welding rods daily price sheet",rateLabel:"Today's dollar rate (parallel market)",rateUnit:"SDG per $1",
+      bufferLabel:"Safety buffer %",roundLabel:"Round up to nearest 100 SDG",rateHint:"Update this number every morning. All pound prices below change with it.",
+      pricesTitle:"Today's prices per carton",thTier:"Customer",thSdg:"Price per carton today (SDG)",thUsd:"Price per carton ($)",thProfit:"Profit per carton ($)",thProfitTon:"Profit per ton ($)",
+      copyBtn:"Copy today's price message",copied:"Copied. Paste it into WhatsApp.",copyFail:"Select the text below and copy it.",
+      containerTitle:"Container and costs",useTotal:"I know my total cost per ton (all costs included)",
+      tons:"Tons in container",cpt:"Cartons per ton",total:"Total cost per ton ($)",cif:"Price per ton, CIF Port Sudan ($)",
+      duty:"Customs duty & taxes, whole container ($)",clearing:"Clearing & port fees, whole container ($)",transport:"Transport to warehouse ($)",other:"Storage, bank fees & other ($)",
+      costNote:"Enter pound costs in dollars, converted at the rate you actually paid.",
+      zeroWarn:"Duty, clearing and transport are still at zero, so these prices are too low. Add your real costs from past containers.",
+      tiersTitle:"Price levels",thMin:"Minimum cartons",thMargin:"Margin %",bulk:"Bulk (wholesalers)",medium:"Medium",small:"Small (workshops)",
+      tiersNote:"Margin is added on top of your full cost per carton.",
+      footer:"Your numbers are saved on this device only. Prices in pounds are valid for today only.",
+      cartons:"Cartons in container",landed:"Total cost",perCarton:"Cost per carton",breakeven:"Break-even per carton today",
+      profitBulk:"Profit if all sold at bulk",profitSmall:"Profit if all sold small",
+      plus:"cartons and up",range:"cartons",lang:"English",langOther:"العربية",
+      msgHead:"Today's prices",msgProduct:"Golden Bridge E6013 welding electrodes, carton {kg} kg",
+      msgBulk:"Bulk",msgMed:"Medium",msgSmall:"Small",msgPer:"SDG per carton",
+      msgFoot:"Prices valid today only. Full payment before delivery."},
+    ar:{title:"تسعيرة إلكترودات اللحام اليومية",rateLabel:"سعر الدولار اليوم (السوق الموازي)",rateUnit:"جنيه لكل دولار",
+      bufferLabel:"هامش أمان %",roundLabel:"تقريب لأعلى لأقرب 100 جنيه",rateHint:"حدّث هذا الرقم كل صباح. كل أسعار الجنيه تحت تتغير معه.",
+      pricesTitle:"أسعار اليوم للكرتونة",thTier:"العميل",thSdg:"سعر الكرتونة اليوم (جنيه)",thUsd:"سعر الكرتونة ($)",thProfit:"الربح للكرتونة ($)",thProfitTon:"الربح للطن ($)",
+      copyBtn:"انسخ رسالة أسعار اليوم",copied:"تم النسخ. الصقها في واتساب.",copyFail:"حدّد النص تحت وانسخه.",
+      containerTitle:"الحاوية والتكاليف",useTotal:"أعرف التكلفة الكاملة للطن (شاملة كل المصاريف)",
+      tons:"الأطنان في الحاوية",cpt:"عدد الكراتين في الطن",total:"التكلفة الكاملة للطن ($)",cif:"سعر الطن CIF بورتسودان ($)",
+      duty:"الجمارك والضرائب للحاوية ($)",clearing:"التخليص ورسوم الميناء للحاوية ($)",transport:"الترحيل للمخزن ($)",other:"التخزين ورسوم البنك وغيرها ($)",
+      costNote:"أدخل التكاليف المدفوعة بالجنيه بالدولار، بالسعر الذي دفعت به فعلاً.",
+      zeroWarn:"الجمارك والتخليص والترحيل ما زالت صفر، لذلك الأسعار أقل من اللازم. أدخل تكاليفك الحقيقية من الحاويات السابقة.",
+      tiersTitle:"مستويات الأسعار",thMin:"أقل عدد كراتين",thMargin:"هامش الربح %",bulk:"جملة (تجار الجملة)",medium:"متوسط",small:"قطاعي (الورش)",
+      tiersNote:"هامش الربح يُضاف فوق التكلفة الكاملة للكرتونة.",
+      footer:"أرقامك محفوظة في هذا الجهاز فقط. أسعار الجنيه سارية لليوم فقط.",
+      cartons:"عدد الكراتين في الحاوية",landed:"التكلفة الكاملة",perCarton:"تكلفة الكرتونة",breakeven:"سعر التعادل للكرتونة اليوم",
+      profitBulk:"الربح لو بيعت كلها جملة",profitSmall:"الربح لو بيعت كلها قطاعي",
+      plus:"كرتونة فأكثر",range:"كرتونة",lang:"العربية",langOther:"English",
+      msgHead:"أسعار اليوم",msgProduct:"إلكترودات لحام قولدن بريدج E6013، كرتونة {kg} كيلو",
+      msgBulk:"جملة",msgMed:"متوسط",msgSmall:"قطاعي",msgPer:"جنيه للكرتونة",
+      msgFoot:"الأسعار سارية لليوم فقط. الدفع كامل قبل الاستلام."}
+  };
+
+  Object.assign(T.en,{setupWarn:"Set up first: enter today's dollar rate below, and your total cost per ton under “Container and costs”.",product:"Product",container:"Container allocation",leftNote:"Cartons left counts sales for the current container only.",saleTitle:"Record a sale",sCustomer:"Customer",sCartons:"Cartons",sLevel:"Price level",sPrice:"Price per carton (SDG)",
+    sPay:"Payment",sNotes:"Notes",payPaid:"Paid in full",payDeposit:"Deposit",saleBtn:"Confirm sale",saleYes:"Yes, save this sale",saleNo:"Cancel",
+    pvTotal:"Total",pvAbout:"about",pvProfit:"Profit",pvBelow:"Below break-even price",pvMin:"Below the minimum order",
+    needCartons:"Enter the number of cartons and a price.",needRate:"Enter today's dollar rate first.",
+    confirmQ:"Save this sale?",saved:"Sale saved.",saveErr:"Could not save on this device. Copy the sale into Excel now.",
+    logTitle:"Sales log",lDate:"Date",lTotal:"Total (SDG)",lProfit:"Profit ($)",lExcel:"File",inExcel:"Sent",isNew:"New",
+    del:"Delete",delSure:"Delete?",noSales:"No sales yet.",
+    sold:"Cartons sold",left:"Cartons left",salesUsd:"Sales ($)",profitUsd:"Profit ($)",newCount:"Not yet sent",
+    copyNew:"Copy new sales for Excel",markDone:"Mark as added to Excel",dlCsv:"Send sales file (CSV)",dlFallback:"Sharing is not available here. Copy the text below, paste it into Notepad, and save it as a .csv file.",dlShared:"File sent. Check it arrived in the Sales Imports folder.",dlSaved:"File saved to your Downloads. Upload it to the Sales Imports folder in Google Drive.",dlCancel:"Sending cancelled. Nothing was sent.",withHeader:"Include column titles",
+    copiedRows:"Copied {n} sales. Paste into the first empty row of your sales log, then tap “Mark as added to Excel”.",
+    noNew:"No new sales to copy.",marked:"Marked {n} sales as added to Excel.",dlDone:"File saved.",dlNo:"Download cancelled.",
+    logNote:"Sales are saved on this device. Send the file at least once a day, and add this page to your home screen, so a cleared browser never loses sales. The CSV file holds only the columns you type in Excel: Sale ID, Product, Sale Date, Quantity Entered, Unit, Price / Ton (Local) and Income FX Rate. Your Excel formulas fill in container allocation, cartons, tonnage and income. The file always contains all sales; the Sale ID stops any sale being added twice.",
+    cols:["Sale ID","Product","Sale Date","Quantity Entered","Unit (Cartons/Tons)","Price / Ton (Local)","Income FX Rate (Local per 1 USD)"]});
+  Object.assign(T.ar,{setupWarn:"الإعداد أولاً: أدخل سعر الدولار اليوم تحت، والتكلفة الكاملة للطن في قسم «الحاوية والتكاليف».",product:"المنتج",container:"الحاوية",leftNote:"الكراتين المتبقية تحسب مبيعات الحاوية الحالية فقط.",saleTitle:"تسجيل عملية بيع",sCustomer:"العميل",sCartons:"عدد الكراتين",sLevel:"مستوى السعر",sPrice:"سعر الكرتونة (جنيه)",
+    sPay:"الدفع",sNotes:"ملاحظات",payPaid:"مدفوع بالكامل",payDeposit:"عربون",saleBtn:"تأكيد البيع",saleYes:"نعم، احفظ البيع",saleNo:"إلغاء",
+    pvTotal:"الإجمالي",pvAbout:"حوالي",pvProfit:"الربح",pvBelow:"أقل من سعر التعادل",pvMin:"أقل من الحد الأدنى للطلب",
+    needCartons:"أدخل عدد الكراتين والسعر.",needRate:"أدخل سعر الدولار اليوم أولاً.",
+    confirmQ:"حفظ عملية البيع هذه؟",saved:"تم حفظ البيع.",saveErr:"تعذّر الحفظ في هذا الجهاز. انسخ البيع إلى إكسل الآن.",
+    logTitle:"سجل المبيعات",lDate:"التاريخ",lTotal:"الإجمالي (جنيه)",lProfit:"الربح ($)",lExcel:"الملف",inExcel:"تم الإرسال",isNew:"جديد",
+    del:"حذف",delSure:"متأكد؟",noSales:"لا توجد مبيعات بعد.",
+    sold:"الكراتين المباعة",left:"الكراتين المتبقية",salesUsd:"المبيعات ($)",profitUsd:"الربح ($)",newCount:"لم تُرسل بعد",
+    copyNew:"انسخ المبيعات الجديدة لإكسل",markDone:"تم الإضافة لإكسل",dlCsv:"إرسال ملف المبيعات (CSV)",dlFallback:"المشاركة غير متاحة هنا. انسخ النص تحت، والصقه في المفكرة (Notepad)، واحفظه كملف ‎.csv.",dlShared:"تم الإرسال. تأكد أن الملف وصل مجلد Sales Imports.",dlSaved:"تم حفظ الملف في التنزيلات. ارفعه إلى مجلد Sales Imports في Google Drive.",dlCancel:"تم إلغاء الإرسال. لم يُرسل شيء.",withHeader:"مع عناوين الأعمدة",
+    copiedRows:"تم نسخ {n} عملية. الصقها في أول صف فارغ في سجل المبيعات، ثم اضغط «تم الإضافة لإكسل».",
+    noNew:"لا توجد مبيعات جديدة للنسخ.",marked:"تم تعليم {n} عملية كمضافة لإكسل.",dlDone:"تم حفظ الملف.",dlNo:"تم إلغاء التنزيل.",
+    logNote:"المبيعات محفوظة في هذا الجهاز. أرسل الملف مرة في اليوم على الأقل، وأضف هذه الصفحة للشاشة الرئيسية، حتى لا تضيع أي مبيعات إذا مُسحت بيانات المتصفح. ملف CSV يحتوي فقط على الأعمدة التي تكتبها في إكسل: رقم البيع، المنتج، تاريخ البيع، الكمية، الوحدة، سعر الطن (جنيه)، وسعر الصرف. معادلات إكسل تحسب الحاوية والكراتين والأطنان والإيراد. الملف يحتوي دائماً كل المبيعات، ورقم البيع يمنع إضافة أي عملية مرتين.",
+    cols:["Sale ID","Product","Sale Date","Quantity Entered","Unit (Cartons/Tons)","Price / Ton (Local)","Income FX Rate (Local per 1 USD)"]});
+  var ids=["product","rate","buffer","tons","cpt","total","cif","duty","clearing","transport","other","minBulk","mBulk","minMed","mMed","minSmall","mSmall"];
+  var checks=["round","useTotal"];
+  var lang="en", KEY="wr-pricing-cartons";
+  function $(id){return document.getElementById(id)}
+  function n(id){var v=parseFloat($(id).value);return isFinite(v)?v:0}
+  function fmt(v,d){return v.toLocaleString("en-US",{minimumFractionDigits:d||0,maximumFractionDigits:d||0})}
+
+  try{
+    var saved=JSON.parse(localStorage.getItem(KEY)||"null");
+    if(saved){
+      ids.forEach(function(k){if(saved[k]!==undefined)$(k).value=saved[k]});
+      checks.forEach(function(k){if(saved[k]!==undefined)$(k).checked=saved[k]});
+      if(saved.lang)lang=saved.lang;
+      if($("product").value==="Golden Bridge E6013")$("product").value="Welding Material";
+    }
+  }catch(e){}
+  function save(){
+    try{var o={lang:lang};ids.forEach(function(k){o[k]=$(k).value});checks.forEach(function(k){o[k]=$(k).checked});
+      localStorage.setItem(KEY,JSON.stringify(o));}catch(e){}
+  }
+  function dateStr(){
+    return new Date().toLocaleDateString(lang==="ar"?"ar-EG-u-nu-latn":"en-GB",{weekday:"long",day:"numeric",month:"long",year:"numeric"});
+  }
+
+  var state={};
+  function calc(){
+    var t=T[lang], rate=n("rate"), buf=n("buffer")/100, tons=n("tons"), cpt=n("cpt")||50;
+    var useTotal=$("useTotal").checked;
+    $("totalField").hidden=!useTotal; $("breakdown").hidden=useTotal;
+    var cartons=tons*cpt;
+    var landed=useTotal ? tons*n("total") : tons*n("cif")+n("duty")+n("clearing")+n("transport")+n("other");
+    var cpc=cartons>0?landed/cartons:0;
+    state.kg=Math.round(1000/cpt*10)/10;
+    function sdg(usd){var v=usd*rate*(1+buf);return $("round").checked?Math.ceil(v/100)*100:Math.round(v);}
+    var minB=n("minBulk"),minM=n("minMed"),minS=n("minSmall");
+    var tiers=[
+      {label:t.bulk,m:n("mBulk")/100,range:fmt(minB)+" "+t.plus,msg:t.msgBulk},
+      {label:t.medium,m:n("mMed")/100,range:fmt(minM)+"–"+fmt(Math.max(minB-1,minM))+" "+t.range,msg:t.msgMed},
+      {label:t.small,m:n("mSmall")/100,range:fmt(minS)+"–"+fmt(Math.max(minM-1,minS))+" "+t.range,msg:t.msgSmall}
+    ];
+    var rows="";
+    tiers.forEach(function(x){
+      x.usd=cpc*(1+x.m); x.sdg=sdg(x.usd); x.profit=x.usd-cpc;
+      rows+="<tr><td class='tier'>"+x.label+"<small class='num'>"+x.range+"</small></td>"+
+        "<td class='sdg num'>"+fmt(x.sdg)+"</td>"+
+        "<td class='num'>$"+fmt(x.usd,2)+"</td><td class='num'>$"+fmt(x.profit,2)+"</td><td class='num'>$"+fmt(x.profit*cpt,2)+"</td></tr>";
+    });
+    $("priceRows").innerHTML=rows;
+    $("pricesTitle").textContent=t.pricesTitle+" ("+state.kg+(lang==="ar"?" كيلو)":" kg)");
+    var sum=[
+      [t.cartons,fmt(cartons)],
+      [t.landed,"$"+fmt(landed)],
+      [t.perCarton,"$"+fmt(cpc,2)],
+      [t.breakeven,fmt(Math.ceil(cpc*rate))+" SDG"],
+      [t.profitBulk,"$"+fmt(tiers[0].profit*cartons)],
+      [t.profitSmall,"$"+fmt(tiers[2].profit*cartons)]
+    ];
+    $("summary").innerHTML=sum.map(function(s){return "<div><div class='k'>"+s[0]+"</div><div class='v num'>"+s[1]+"</div></div>"}).join("");
+    $("setupWarn").hidden=(rate>0&&cpc>0);
+    $("zeroWarn").style.display=(!useTotal&&(n("duty")+n("clearing")+n("transport"))===0)?"block":"none";
+    state.tiers=tiers; state.cpc=cpc; state.rate=rate; state.cartons=cartons;
+    save();
+    refreshSale(); renderLog();
+  }
+
+  function message(){
+    var t=T[lang], L=[t.msgHead+" – "+dateStr(), t.msgProduct.replace("{kg}",state.kg), ""];
+    state.tiers.forEach(function(x){L.push("• "+x.msg+" ("+x.range+"): "+fmt(x.sdg)+" "+t.msgPer)});
+    L.push("",t.msgFoot);
+    return L.join("\n");
+  }
+
+  function applyLang(){
+    var t=T[lang];
+    document.documentElement.lang=lang; document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+    document.querySelectorAll("[data-i18n]").forEach(function(el){var k=el.getAttribute("data-i18n");if(t[k])el.textContent=t[k]});
+    $("langBtn").textContent=t.langOther;
+    var lo=$("sLevel").options; lo[0].textContent=t.bulk; lo[1].textContent=t.medium; lo[2].textContent=t.small;
+    var po=$("sPay").options; po[0].textContent=t.payPaid; po[1].textContent=t.payDeposit;
+    document.title=t.title;
+    $("today").textContent=dateStr();
+    $("copyStatus").textContent=""; $("msgBox").style.display="none";
+    calc();
+  }
+
+  $("langBtn").addEventListener("click",function(){lang=lang==="en"?"ar":"en";applyLang();});
+  ids.concat(checks).forEach(function(k){$(k).addEventListener("input",calc);$(k).addEventListener("change",calc);});
+  $("copyBtn").addEventListener("click",function(){
+    var text=message(), t=T[lang], box=$("msgBox");
+    box.value=text;
+    function fallback(){box.style.display="block";box.focus();box.select();$("copyStatus").textContent=t.copyFail;}
+    try{
+      if(navigator.clipboard&&navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).then(function(){box.style.display="block";$("copyStatus").textContent=t.copied;},fallback);
+      }else{fallback();}
+    }catch(e){fallback();}
+  });
+
+
+  // ---------- Sales ----------
+  var SALES_KEY="wr-sales", sales=[], priceDirty=false;
+  try{var raw=JSON.parse(localStorage.getItem(SALES_KEY)||"[]"); if(Array.isArray(raw))sales=raw;}catch(e){sales=[]}
+  function saveSales(){try{localStorage.setItem(SALES_KEY,JSON.stringify(sales));return true}catch(e){return false}}
+  var LEVELS=["bulk","medium","small"];
+  function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]})}
+  function levelFor(c){if(c>=n("minBulk"))return 0;if(c>=n("minMed"))return 1;return 2}
+  function pad(x){return (x<10?"0":"")+x}
+
+  function refreshSale(){
+    if(!state.tiers)return;
+    if(!priceDirty){var lv=+$("sLevel").value||0; $("sPrice").value=state.tiers[lv].sdg;}
+    preview();
+  }
+  function preview(){
+    var t=T[lang], c=n("sCartons"), price=n("sPrice"), rate=state.rate||0, box=$("salePreview");
+    if(!(c>0)||!(price>0)||!(rate>0)){box.textContent="";box.style.display="none";return}
+    box.style.display="block";
+    var total=c*price, usd=total/rate, profit=usd-c*state.cpc;
+    var html=t.pvTotal+": <b>"+fmt(total)+" SDG</b> ("+t.pvAbout+" $"+fmt(usd,2)+") · "+t.pvProfit+": <b>$"+fmt(profit,2)+"</b>";
+    if(price<state.cpc*rate) html+="<br><span style='color:var(--warn)'>⚠ "+t.pvBelow+" ("+fmt(Math.ceil(state.cpc*rate))+" SDG)</span>";
+    else if(c<n("minSmall")) html+="<br><span style='color:var(--warn)'>⚠ "+t.pvMin+" ("+fmt(n("minSmall"))+")</span>";
+    box.innerHTML=html;
+  }
+  function status(id,msg,err){var el=$(id);el.textContent=msg;el.className="status"+(err?" err":"")}
+
+  function renderLog(){
+    var t=T[lang], rows="", sold=0, usd=0, profit=0, nNew=0;
+    var list=sales.slice().sort(function(a,b){return a.ts<b.ts?1:-1});
+    list.forEach(function(r){
+      sold+=r.cartons; usd+=r.totalUSD; profit+=r.profit; if(!r.exported)nNew++;
+      rows+="<tr><td class='num'>"+esc(r.date)+" <small style='color:var(--muted)'>"+esc(r.time)+"</small></td>"+
+        "<td>"+esc(r.customer||"—")+"</td><td class='num'>"+fmt(r.cartons)+"</td>"+
+        "<td class='num'>"+fmt(r.total)+"</td><td class='num'>$"+fmt(r.profit,2)+"</td>"+
+        "<td><span class='tag"+(r.exported?"":" new")+"'>"+(r.exported?t.inExcel:t.isNew)+"</span></td>"+
+        "<td><button class='del' type='button' data-id='"+esc(r.id)+"'>"+t.del+"</button></td></tr>";
+    });
+    $("logRows").innerHTML=rows||"<tr><td colspan='7' class='empty'>"+t.noSales+"</td></tr>";
+    var sum=[[t.sold,fmt(sold)],[t.salesUsd,"$"+fmt(usd,2)],[t.profitUsd,"$"+fmt(profit,2)],[t.newCount,fmt(nNew)]];
+    $("logSummary").innerHTML=sum.map(function(x){return "<div><div class='k'>"+x[0]+"</div><div class='v num'>"+x[1]+"</div></div>"}).join("");
+  }
+
+  function rowValues(r){
+    var cpt=r.cpt||n("cpt")||50;
+    var prod=(!r.product||r.product==="Golden Bridge E6013")?$("product").value.trim():r.product;
+    return [r.id, prod, r.date, r.cartons, "Cartons", Math.round(r.price*cpt), r.rate];
+  }
+  function clean(v){return String(v==null?"":v).replace(/[\t\r\n]+/g," ")}
+
+  $("sCartons").addEventListener("input",function(){ $("sLevel").value=String(levelFor(n("sCartons"))); refreshSale(); });
+  $("sLevel").addEventListener("change",function(){ priceDirty=false; refreshSale(); });
+  $("sPrice").addEventListener("input",function(){ priceDirty=true; preview(); });
+
+  $("saleBtn").addEventListener("click",function(){
+    var t=T[lang], c=n("sCartons"), price=n("sPrice");
+    if(!(state.rate>0)){status("saleStatus",t.needRate,true);return}
+    if(!(c>0)||!(price>0)){status("saleStatus",t.needCartons,true);return}
+    status("saleStatus","");
+    var total=c*price;
+    $("confirmText").innerHTML="<b>"+t.confirmQ+"</b><br>"+esc($("sCustomer").value.trim()||"—")+" · "+fmt(c)+" × "+fmt(price)+" = <b>"+fmt(total)+" SDG</b>";
+    $("confirmBox").hidden=false; $("saleYes").focus();
+  });
+  $("saleNo").addEventListener("click",function(){ $("confirmBox").hidden=true; });
+  $("saleYes").addEventListener("click",function(){
+    var t=T[lang], c=n("sCartons"), price=n("sPrice"), d=new Date(), total=c*price, usd=total/state.rate;
+    var rec={id:d.getTime().toString(36)+Math.random().toString(36).slice(2,6), ts:d.toISOString(),
+      date:d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate()), time:pad(d.getHours())+":"+pad(d.getMinutes()),
+      customer:$("sCustomer").value.trim(), product:$("product").value.trim(), cpt:n("cpt")||50, level:LEVELS[+$("sLevel").value||0], cartons:c, price:price, total:total,
+      rate:state.rate, totalUSD:Math.round(usd*100)/100, cpc:Math.round(state.cpc*10000)/10000,
+      profit:Math.round((usd-c*state.cpc)*100)/100, payment:$("sPay").value, notes:$("sNotes").value.trim(), exported:false};
+    sales.push(rec);
+    var ok=saveSales();
+    $("confirmBox").hidden=true;
+    $("sCustomer").value="";$("sCartons").value="";$("sNotes").value="";$("sPay").value="paid";
+    priceDirty=false; $("sLevel").value="0"; refreshSale(); renderLog();
+    status("saleStatus",ok?t.saved:t.saveErr,!ok);
+  });
+
+  $("logRows").addEventListener("click",function(e){
+    var b=e.target.closest(".del"); if(!b)return;
+    var t=T[lang];
+    if(b.dataset.armed){ sales=sales.filter(function(r){return r.id!==b.dataset.id}); saveSales(); renderLog(); return; }
+    b.dataset.armed="1"; b.classList.add("armed"); b.textContent=t.delSure;
+    setTimeout(function(){ if(document.body.contains(b)){ delete b.dataset.armed; b.classList.remove("armed"); b.textContent=t.del; } },4000);
+  });
+
+  function buildCsv(){
+    var t=T[lang];
+    function q(v){v=String(v==null?"":v);return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')+'"':v}
+    var list=sales.slice().sort(function(a,b){return a.ts<b.ts?-1:1});
+    return [t.cols.map(q).join(",")].concat(list.map(function(r){return rowValues(r).map(q).join(",")})).join("\r\n");
+  }
+  function markDownloaded(){ sales.forEach(function(r){r.exported=true}); saveSales(); renderLog(); }
+  $("dlCsv").addEventListener("click",function(){
+    var t=T[lang], box=$("logBox");
+    if(!sales.length){status("logStatus",t.noSales);box.style.display="none";return}
+    var csv="﻿"+buildCsv(), d=new Date();
+    var name="welding-sales-"+d.getFullYear()+"-"+pad(d.getMonth()+1)+"-"+pad(d.getDate())+"-"+pad(d.getHours())+pad(d.getMinutes())+".csv";
+    function fallback(){ box.value=csv.slice(1); box.style.display="block"; box.focus(); box.select(); status("logStatus",t.dlFallback); }
+    function done(msg){ box.style.display="none"; markDownloaded(); status("logStatus",msg); }
+    var file=null;
+    try{ file=new File([csv],name,{type:"text/csv"}); }catch(e){ file=null; }
+    // 1) Phone share sheet (Drive, WhatsApp, email...)
+    if(file && navigator.canShare && navigator.share){
+      var ok=false; try{ ok=navigator.canShare({files:[file]}); }catch(e){ ok=false; }
+      if(ok){
+        navigator.share({files:[file],title:name}).then(function(){ done(t.dlShared); },function(err){
+          if(err&&err.name==="AbortError") status("logStatus",t.dlCancel); else saveFile();
+        });
+        return;
+      }
+    }
+    saveFile();
+    // 2) Plain download
+    function saveFile(){
+      try{
+        var blob=new Blob([csv],{type:"text/csv;charset=utf-8"}), url=URL.createObjectURL(blob), a=document.createElement("a");
+        if(!("download" in a)){ URL.revokeObjectURL(url); fallback(); return; }
+        a.href=url; a.download=name; document.body.appendChild(a); a.click();
+        setTimeout(function(){ document.body.removeChild(a); URL.revokeObjectURL(url); },1500);
+        done(t.dlSaved);
+      }catch(e){ fallback(); }
+    }
+  });
+  applyLang();
+})();
+</script>
+</body>
+</html>
